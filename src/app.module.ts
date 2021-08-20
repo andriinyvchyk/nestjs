@@ -4,7 +4,7 @@ import { AppController } from './app.controller';
 import { AppService } from './app.service';
 import { GraphQLModule } from '@nestjs/graphql';
 import { TypeOrmModule } from '@nestjs/typeorm'
-import { RecipesModule } from './users/recipes.module';
+import { RecipesModule } from './users/users.module';
 
 @Module({
   imports: [
