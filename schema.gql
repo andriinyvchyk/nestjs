@@ -1,0 +1,29 @@
+# ------------------------------------------------------
+# THIS FILE WAS AUTOMATICALLY GENERATED (DO NOT MODIFY)
+# ------------------------------------------------------
+
+type User {
+  id: ID!
+  name: String!
+  lastName: String!
+  pass: String!
+}
+
+type Query {
+  findAll: [User!]!
+}
+
+type Mutation {
+  create(input: NewUserInput!): User!
+  auth(input: AuthUserInput!): User!
+}
+
+input NewUserInput {
+  name: String!
+  lastName: String!
+  pass: String!
+}
+
+input AuthUserInput {
+  name: String!
+}

@@ -4,10 +4,12 @@ import { AppController } from './app.controller';
 import { AppService } from './app.service';
 import { GraphQLModule } from '@nestjs/graphql';
 import { TypeOrmModule } from '@nestjs/typeorm'
-import { RecipesModule } from './users/users.module';
+import { UsersModule } from './users/users.module';
+import { User } from './users/entity/user.entity';
 
 @Module({
   imports: [
+    UsersModule,
     GraphQLModule.forRoot({
       installSubscriptionHandlers: true,
       autoSchemaFile: 'schema.gql',
@@ -19,7 +21,9 @@ import { RecipesModule } from './users/users.module';
       username: 'postgres',
       password: '123456',
       database: 'nest',
-      entities: ['dist/**/*.model.js'],
+      entities: [
+        User
+      ],
       synchronize: false,
     }),
   ],

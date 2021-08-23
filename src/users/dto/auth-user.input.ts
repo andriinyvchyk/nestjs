@@ -2,15 +2,11 @@ import { Field, InputType } from '@nestjs/graphql';
 import { IsOptional, Length, MaxLength } from 'class-validator';
 
 @InputType()
-export class NewUserInput {
+export class AuthUserInput {
   @Field()
   @MaxLength(30)
   name: string;
 
   @Field()
-  @MaxLength(30)
-  lastName: string;
-
-  @Field()
-  pass: string;
+  pass?: string;
 }

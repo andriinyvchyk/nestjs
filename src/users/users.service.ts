@@ -1,29 +1,36 @@
 import { Injectable } from '@nestjs/common';
+import { NotFoundException } from '@nestjs/common';
 import { NewUserInput } from './dto/new-user.input';
-import { UsersArgs } from './dto/users.args';
-import { User } from './models/user.model';
+import { AuthUserInput } from './dto/auth-user.input';
+import { InjectRepository } from '@nestjs/typeorm';
+import { Repository } from 'typeorm';
+import { User } from './entity/user.entity';
 
 @Injectable()
 export class UsersService {
-  /**
-   * MOCK
-   * Put some real business logic here
-   * Left for demonstration purposes
-   */
+
+  constructor(
+    @InjectRepository(User)
+    private usersRepository: Repository<User>,
+  ) { }
+
+  async findAll(): Promise<User[]> {
+    return await this.usersRepository.find();
+  }
 
   async create(data: NewUserInput): Promise<User> {
-    return {} as any;
+    const newUser = await this.usersRepository.save(data)
+    return newUser as User;
   }
 
-  async findOneById(id: string): Promise<User> {
-    return {} as any;
-  }
+  async auth(data: AuthUserInput): Promise<User> {
+    const user = await this.usersRepository.findOne({ name: data.name })
+    if (!user) throw new NotFoundException(user);
 
-  async findAll(args: UsersArgs): Promise<User[]> {
-    return [] as User[];
-  }
+    if (data.pass === user.pass) {
+      console.log('success')
+    }
 
-  async remove(id: string): Promise<boolean> {
-    return true;
+    return user as User;
   }
 }
