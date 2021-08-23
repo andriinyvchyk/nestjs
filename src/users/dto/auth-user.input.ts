@@ -8,5 +8,6 @@ export class AuthUserInput {
   name: string;
 
   @Field()
-  pass?: string;
+  pass: string;
+
 }

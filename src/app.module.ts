@@ -1,11 +1,14 @@
 import "reflect-metadata";
-import { Module } from '@nestjs/common';
+import { MiddlewareConsumer, Module, NestModule } from '@nestjs/common';
 import { AppController } from './app.controller';
 import { AppService } from './app.service';
 import { GraphQLModule } from '@nestjs/graphql';
 import { TypeOrmModule } from '@nestjs/typeorm'
 import { UsersModule } from './users/users.module';
 import { User } from './users/entity/user.entity';
+import { JwtModule } from '@nestjs/jwt';
+import { APP_GUARD } from '@nestjs/core';
+import { TokenGuard } from './users/guards/token.guard';
 
 @Module({
   imports: [
@@ -26,8 +29,16 @@ import { User } from './users/entity/user.entity';
       ],
       synchronize: false,
     }),
+    JwtModule.register({
+      secretOrPrivateKey: 'secret',
+      signOptions: {
+        expiresIn: 2592000,
+      },
+    }),
   ],
   controllers: [AppController],
   providers: [AppService],
 })
-export class AppModule {}
+export class AppModule{
+
+}

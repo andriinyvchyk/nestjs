@@ -1,13 +1,33 @@
-import { Module } from '@nestjs/common';
+import { MiddlewareConsumer, Module, NestModule } from '@nestjs/common';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { UsersResolver } from './users.resolver';
 import { UsersService } from './users.service';
 import { User } from './entity/user.entity';
 import { NewUserInput } from './dto/new-user.input';
 import { AuthUserInput } from './dto/auth-user.input';
+import { JwtModule } from '@nestjs/jwt';
+import { APP_GUARD } from '@nestjs/core';
+import { TokenGuard } from './guards/token.guard';
 
 @Module({
-  imports: [TypeOrmModule.forFeature([User])],
-  providers: [UsersService, UsersResolver, NewUserInput, AuthUserInput],
+  imports: [
+    TypeOrmModule.forFeature([User]),
+    JwtModule.register({
+      secretOrPrivateKey: 'secret',
+      signOptions: {
+        expiresIn: 2592000,
+      },
+    }),
+],
+  providers: [
+    {
+      provide: APP_GUARD,
+      useClass: TokenGuard,
+    },
+    UsersService, 
+    UsersResolver, 
+    NewUserInput, 
+    AuthUserInput, 
+  ],
 })
 export class UsersModule {}
