@@ -17,17 +17,15 @@ import { TokenGuard } from './guards/token.guard';
       signOptions: {
         expiresIn: 2592000,
       },
-    }),
-],
+    })
+  ],
   providers: [
-    {
-      provide: APP_GUARD,
-      useClass: TokenGuard,
-    },
-    UsersService, 
-    UsersResolver, 
-    NewUserInput, 
-    AuthUserInput, 
+    TokenGuard,
+
+    UsersService,
+    UsersResolver,
+    NewUserInput,
+    AuthUserInput,
   ],
 })
-export class UsersModule {}
+export class UsersModule { }

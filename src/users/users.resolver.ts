@@ -5,10 +5,15 @@ import { AuthUserInput } from './dto/auth-user.input';
 import { UsersService } from './users.service';
 import { User } from './entity/user.entity';
 import { TokenGuard } from './guards/token.guard';
-import { HttpStatus, Req, Res, UseGuards } from '@nestjs/common';
-import express, {Request, Response} from 'express';
-
+import { createParamDecorator, ExecutionContext, HttpStatus, Req, Res, UseGuards } from '@nestjs/common';
+import express, { Request, Response } from 'express';
+import { GqlExecutionContext } from '@nestjs/graphql';
 const pubSub = new PubSub();
+
+const GetUser = createParamDecorator((data, context: ExecutionContext) => {
+  const ctx = GqlExecutionContext.create(context).getContext();
+  return ctx.req.user
+});
 
 @Resolver(of => User)
 export class UsersResolver {
@@ -23,10 +28,8 @@ export class UsersResolver {
 
   @Query(returns => User)
   @UseGuards(TokenGuard)
-  async me(@Req() req: Request): Promise<User[]> {
-    console.log('req', req['user'])
-    const users = await this.userService.findAll();
-    return users
+  async me(@GetUser() user: User): Promise<User> {
+    return user
   }
 
   @Mutation(returns => User)

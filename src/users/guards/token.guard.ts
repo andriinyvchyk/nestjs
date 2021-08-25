@@ -1,35 +1,40 @@
-import { HttpStatus, Injectable, NestMiddleware } from '@nestjs/common';
-import { Request, Response, NextFunction } from 'express';
-import { HttpException } from '@nestjs/common/exceptions/http.exception';
+import { CanActivate, ExecutionContext, Injectable } from '@nestjs/common';
 import { JwtService } from '@nestjs/jwt';
-import { UsersService } from '../users.service'
+import { UsersService } from '../users.service';
+import { Request, Response, NextFunction } from 'express';
+import { GqlExecutionContext } from '@nestjs/graphql';
+
 @Injectable()
-export class TokenGuard {
+
+export class TokenGuard implements CanActivate {
 
     constructor(
         private readonly jwtService: JwtService,
-        private readonly usersService: UsersService
-        
-        ) {
+        // private readonly usersService: UsersService
+
+    ) {
 
     }
-    async use(req: Request, res: Response, next: NextFunction) {
-        const authHeaders = req.headers.authorization;
-        console.log('nexr')
+
+    getRequest(context: ExecutionContext) {
+        const ctx = GqlExecutionContext.create(context);
+        return ctx.getContext().req;
+    }
+
+    async canActivate(context: ExecutionContext) {
+        const authHeaders = context.getArgs()[2].req.headers.authorization as string;
+
         if (authHeaders && (authHeaders as string).split(' ')[1]) {
             const token = (authHeaders as string).split(' ')[1];
             const decoded: any = this.jwtService.verify(token);
-            const user = await this.usersService.findById(decoded.id);
-            console.log('user', user)
-            if (!user) {
-                throw new HttpException('User not found.', HttpStatus.UNAUTHORIZED);
+            context.getArgs()[2].req['user'] = decoded;
+            if (context.getArgs()[2].req['user']) {
+                return true;
             }
-            console.log('user', user)
-            req['user'] = user;
-            next();
-
-        } else {
-            throw new HttpException('Not authorized.', HttpStatus.UNAUTHORIZED);
         }
+
+        return false;
+
     }
+
 }
