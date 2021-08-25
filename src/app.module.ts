@@ -7,17 +7,13 @@ import { TypeOrmModule } from '@nestjs/typeorm'
 import { UsersModule } from './users/users.module';
 import { User } from './users/entity/user.entity';
 import { JwtModule } from '@nestjs/jwt';
-import { APP_GUARD } from '@nestjs/core';
-// import { TokenGuard } from './users/guards/token.strategy';
-import { TokenGuard } from './users/guards/token.guard';
 
 @Module({
   imports: [
     UsersModule,
     GraphQLModule.forRoot({
       installSubscriptionHandlers: true,
-      autoSchemaFile: 'schema.gql',
-      context: ({req}) => ({...req}),
+      autoSchemaFile: 'schema.gql'
     }),
     TypeOrmModule.forRoot({
       type: 'postgres',
@@ -39,10 +35,7 @@ import { TokenGuard } from './users/guards/token.guard';
     }),
   ],
   controllers: [AppController],
-  providers: [AppService, {
-    provide: APP_GUARD,
-    useClass: TokenGuard,
-  },],
+  providers: [AppService],
 })
 export class AppModule{
 

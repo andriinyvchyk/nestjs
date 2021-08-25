@@ -6,7 +6,6 @@ import { User } from './entity/user.entity';
 import { NewUserInput } from './dto/new-user.input';
 import { AuthUserInput } from './dto/auth-user.input';
 import { JwtModule } from '@nestjs/jwt';
-import { APP_GUARD } from '@nestjs/core';
 import { TokenGuard } from './guards/token.guard';
 
 @Module({

@@ -10,8 +10,6 @@ export class TokenGuard implements CanActivate {
 
     constructor(
         private readonly jwtService: JwtService,
-        // private readonly usersService: UsersService
-
     ) {
 
     }

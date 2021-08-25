@@ -8,7 +8,6 @@ import { TokenGuard } from './guards/token.guard';
 import { createParamDecorator, ExecutionContext, HttpStatus, Req, Res, UseGuards } from '@nestjs/common';
 import express, { Request, Response } from 'express';
 import { GqlExecutionContext } from '@nestjs/graphql';
-const pubSub = new PubSub();
 
 const GetUser = createParamDecorator((data, context: ExecutionContext) => {
   const ctx = GqlExecutionContext.create(context).getContext();
