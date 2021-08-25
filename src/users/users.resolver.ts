@@ -19,6 +19,14 @@ const GetUser = createParamDecorator((data, context: ExecutionContext) => {
 export class UsersResolver {
   constructor(private readonly userService: UsersService) { }
 
+  @Query(returns => User)
+  @UseGuards(TokenGuard)
+  async balance(@GetUser() user: User): Promise<User> {
+    const userBalance = await this.userService.balance(user);
+    console.log(userBalance)
+    return userBalance;
+  }
+
   @Query(returns => [User])
   @UseGuards(TokenGuard)
   async findAll(): Promise<User[]> {

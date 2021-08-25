@@ -22,4 +22,8 @@ export class User {
   @Column()
   pass: string;
 
+  @Field({defaultValue: 1000 })
+  @Column()
+  balance : number;
+
 }

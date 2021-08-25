@@ -1,5 +1,6 @@
-import { Injectable } from '@nestjs/common';
+import { Injectable, InternalServerErrorException } from '@nestjs/common';
 import { NotFoundException } from '@nestjs/common';
+import { Connection } from 'typeorm';
 import { JwtService } from '@nestjs/jwt';
 import { NewUserInput } from './dto/new-user.input';
 import { AuthUserInput } from './dto/auth-user.input';
@@ -14,7 +15,37 @@ export class UsersService {
     @InjectRepository(User)
     private usersRepository: Repository<User>,
     private readonly jwtService: JwtService,
+    private connection: Connection,
   ) { }
+
+  async balance(data): Promise<User> {
+    const user = await this.usersRepository.findOne({id: data.id})
+    if (!user) throw new NotFoundException(user);
+    if(user.balance === 0) throw new NotFoundException(user);
+
+    console.log('good')
+
+    const queryRunner = this.connection.createQueryRunner();
+    await queryRunner.connect();
+    await queryRunner.startTransaction();
+
+    console.log('user.id', user.id)
+    try {
+      await queryRunner.manager.update(User, user.id, {
+        balance: 500
+      });
+
+      await queryRunner.commitTransaction();
+    } catch (error) {
+      console.log(error)
+      await queryRunner.rollbackTransaction();
+      throw new InternalServerErrorException();
+    } finally {
+      await queryRunner.release();
+    }
+
+    return user as User;
+  }
 
   async findAll(): Promise<User[]> {
     return await this.usersRepository.find();
