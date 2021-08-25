@@ -39,7 +39,7 @@ export class UsersService {
     } catch (error) {
       console.log(error)
       await queryRunner.rollbackTransaction();
-      throw new InternalServerErrorException();
+      throw new InternalServerErrorException(error);
     } finally {
       await queryRunner.release();
     }
