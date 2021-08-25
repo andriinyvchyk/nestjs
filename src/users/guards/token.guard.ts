@@ -14,25 +14,28 @@ export class TokenGuard implements CanActivate {
 
     }
 
+    /**
+     * @deprecated
+     * @param context
+     */
     getRequest(context: ExecutionContext) {
         const ctx = GqlExecutionContext.create(context);
         return ctx.getContext().req;
     }
 
     async canActivate(context: ExecutionContext) {
-        const authHeaders = context.getArgs()[2].req.headers.authorization as string;
+        const gqlContext = GqlExecutionContext.create(context).getContext();
+        const {req: {headers: {authorization}}} = gqlContext
 
-        if (authHeaders && (authHeaders as string).split(' ')[1]) {
-            const token = (authHeaders as string).split(' ')[1];
-            const decoded: any = this.jwtService.verify(token);
-            context.getArgs()[2].req['user'] = decoded;
-            if (context.getArgs()[2].req['user']) {
+        if (authorization && (authorization as string).split(' ')[1]) {
+            const token = (authorization as string).split(' ')[1];
+            gqlContext.req.user = this.jwtService.verify(token);
+            if (gqlContext.req.user) {
                 return true;
             }
         }
 
         return false;
-
     }
 
 }
