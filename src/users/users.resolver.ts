@@ -1,18 +1,11 @@
-import { Args, Mutation, Query, Resolver, Subscription } from '@nestjs/graphql';
-import { PubSub } from 'apollo-server-express';
+import {Args, Context, Mutation, Query, Resolver} from '@nestjs/graphql';
 import { NewUserInput } from './dto/new-user.input';
 import { AuthUserInput } from './dto/auth-user.input';
 import { UsersService } from './users.service';
 import { User } from './entity/user.entity';
 import { TokenGuard } from './guards/token.guard';
-import { createParamDecorator, ExecutionContext, HttpStatus, Req, Res, UseGuards } from '@nestjs/common';
-import express, { Request, Response } from 'express';
-import { GqlExecutionContext } from '@nestjs/graphql';
-
-const GetUser = createParamDecorator((data, context: ExecutionContext) => {
-  const ctx = GqlExecutionContext.create(context).getContext();
-  return ctx.req.user
-});
+import { Res, UseGuards } from '@nestjs/common';
+import { Response } from 'express';
 
 @Resolver(of => User)
 export class UsersResolver {
@@ -20,23 +13,20 @@ export class UsersResolver {
 
   @Query(returns => User)
   @UseGuards(TokenGuard)
-  async balance(@GetUser() user: User): Promise<User> {
-    const userBalance = await this.userService.balance(user);
-    console.log(userBalance)
-    return userBalance;
+  async balance(@Context('req') req): Promise<User> {
+    return this.userService.balance(req.user);
   }
 
   @Query(returns => [User])
   @UseGuards(TokenGuard)
   async findAll(): Promise<User[]> {
-    const users = await this.userService.findAll();
-    return users;
+    return this.userService.findAll();
   }
 
   @Query(returns => User)
   @UseGuards(TokenGuard)
-  async me(@GetUser() user: User): Promise<User> {
-    return user
+  async me(@Context('req') req): Promise<User> {
+    return req.user
   }
 
   @Mutation(returns => User)
@@ -44,17 +34,15 @@ export class UsersResolver {
   async create(
     @Args('input') newUserData: NewUserInput,
   ): Promise<User> {
-    const user = await this.userService.create(newUserData);
-    return user;
+    return this.userService.create(newUserData);
   }
 
   @Mutation(returns => User)
-  @UseGuards(TokenGuard)
+  // @UseGuards(TokenGuard)
   async auth(
     @Res() res: Response,
     @Args('input') authUserInput: AuthUserInput,
   ): Promise<User> {
-    const user = await this.userService.auth(authUserInput);
-    return user;
+    return this.userService.auth(authUserInput);
   }
 }

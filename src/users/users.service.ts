@@ -18,9 +18,10 @@ export class UsersService {
     private connection: Connection,
   ) { }
 
-  async balance(data): Promise<User> {
-    const user = await this.usersRepository.findOne({id: data.id})
-    if (!user) throw new NotFoundException(user);
+  async balance(user: User): Promise<User> {
+    const record = await this.usersRepository.findOne({id: user.id})
+    if (!record) throw new NotFoundException(user);
+
     if(user.balance === 0) throw new NotFoundException(user);
 
     console.log('good')
@@ -44,7 +45,7 @@ export class UsersService {
       await queryRunner.release();
     }
 
-    return user as User;
+     return await this.usersRepository.findOne({id: user.id})
   }
 
   async findAll(): Promise<User[]> {
