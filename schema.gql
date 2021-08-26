@@ -14,6 +14,7 @@ type Query {
   balance: User!
   findAll: [User!]!
   me: User!
+  createPayment: User!
 }
 
 type Mutation {
